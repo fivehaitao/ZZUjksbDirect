@@ -168,7 +168,7 @@ for pop_user in user_pool:
     response = False
     mixed_token = False
     all_input = sys.argv
-    sleep(20)   # 每个用户之间延时，以提高成功率
+    # sleep(20)   # 每个用户之间延时，以提高成功率
 
     
 
