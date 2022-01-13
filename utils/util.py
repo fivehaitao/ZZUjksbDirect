@@ -84,7 +84,7 @@ def report_mail(send_mail_info, receive_mail_address, msg):
             smtp_obj.login(mail_id, mail_pd)
             smtp_obj.sendmail(mail_id, receive_mail_address, mail_message.as_string())
             smtp_obj.quit()
-            add_admin_log('用户' + str(receive_mail_address) + '具体提示信息已发送到邮箱，内容包含个人敏感信息，请勿泄露邮件内容.')
+            add_admin_log('用户邮箱' + str(receive_mail_address) + '提示信息已发送，内容包含个人敏感信息，请勿泄露邮件内容.')
         else:
             smtp_obj = smtplib.SMTP_SSL(mail_host, mail_port)
             smtp_obj.login(mail_id, mail_pd)
@@ -94,4 +94,11 @@ def report_mail(send_mail_info, receive_mail_address, msg):
     except smtplib.SMTPException:
         print('发送结果的邮箱设置可能异常，请检查邮箱和密码配置，以及发信SMTP服务器配置.')
         raise smtplib.SMTPException
+
+
+def list_to_str(list):
+    res = ""
+    for li in list:
+        res += li+'\n'
+    return res
 
