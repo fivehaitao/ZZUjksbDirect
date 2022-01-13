@@ -9,6 +9,103 @@ from time import sleep
 
 import requests
 
+
+
+
+# 创建发送邮件的方法
+def report_mail(full_info=debug_switch):
+    if full_info:
+        this_time_vars = {'result_flag': result_flag,
+                          'mixed_token': mixed_token,
+                          'public_data': public_data,
+                          'step_1_output': step_1_output,
+                          'step_1_calc': step_1_calc,
+                          'step_1_state': step_1_state,
+                          'step_2_output': step_2_output,
+                          'step_2_calc': step_2_calc,
+                          'step_2_state': step_2_state,
+                          'step_3_output': step_3_output,
+                          'step_3_calc': step_3_calc,
+                          'step_3_state': step_3_state,
+                          'secrets_inputted': sys.argv,
+                          'step_1_post_data': post_data,
+                          'result': result
+                          }
+    else:
+        if type(result) == str:
+            replaced_result = result.replace(real_name, "喵喵喵")
+        else:
+            replaced_result = result
+        this_time_vars = {'result_flag': result_flag,
+                          'step_1_output': step_1_output,
+                          'step_1_calc': step_1_calc,
+                          'step_1_state': step_1_state,
+                          'step_2_output': step_2_output,
+                          'step_2_calc': step_2_calc,
+                          'step_2_state': step_2_state,
+                          'step_3_calc': step_3_calc,
+                          'step_3_state': step_3_state,
+                          'result': replaced_result
+                          }
+    with open("mail_public_config.json", 'rb') as file_obj_inner:
+        public_mail_config = json.load(file_obj_inner)
+        file_obj_inner.close()
+    # 配置邮件内容
+    mail_message = MIMEText(str(this_time_vars), 'plain', 'utf-8')
+    mail_message['Subject'] = public_mail_config['title']
+    mail_message['From'] = mail_id
+    mail_message['To'] = mail_target
+    # 尝试发送邮件
+    try:
+        mail_host = "Zero"
+        mail_port = "0"
+        this_host = "Zero"
+        for each_host in public_mail_config["symbol"]:
+            if each_host in mail_id:
+                mail_host = public_mail_config[each_host]["host"]
+                mail_port = public_mail_config[each_host]["port"]
+                this_host = each_host
+                break
+        if mail_host == "Zero":
+            print('发送结果的邮箱设置异常，请在 mail_public_config.json 中检查邮箱的域名配置，以及发信SMTP服务器配置.')
+            raise smtplib.SMTPException
+        if this_host == "Zero":
+            print('发送结果的邮箱设置异常，请确保 mail_public_config.json 中包含您的邮箱配置.')
+            raise smtplib.SMTPException
+        if "encryption" in public_mail_config[this_host].keys():
+            smtp_obj = smtplib.SMTP(mail_host, mail_port)
+            smtp_obj.ehlo()
+            smtp_obj.starttls()
+            smtp_obj.ehlo()
+            smtp_obj.login(mail_id, mail_pd)
+            smtp_obj.sendmail(mail_id, mail_target, mail_message.as_string())
+            smtp_obj.quit()
+            print('用户' + str(now_user) + '具体提示信息已发送到邮箱，内容包含个人敏感信息，请勿泄露邮件内容.')
+        else:
+            smtp_obj = smtplib.SMTP_SSL(mail_host, mail_port)
+            smtp_obj.login(mail_id, mail_pd)
+            smtp_obj.sendmail(mail_id, mail_target, mail_message.as_string())
+            smtp_obj.quit()
+            print('用户' + str(now_user) + '具体提示信息已发送到邮箱，内容包含个人敏感信息，请勿泄露邮件内容.')
+        if now_user >= len(user_pool):
+            print("所有用户遍历完毕，结束运行.")
+            exit(0)
+        else:
+            return "next_one"
+    except smtplib.SMTPException:
+        print('发送结果的邮箱设置可能异常，请检查邮箱和密码配置，以及发信SMTP服务器配置.')
+        raise smtplib.SMTPException
+
+
+
+
+
+
+
+
+
+
+
 # ###### 调试区，项目可稳定使用时，两者均应是 False
 # 调试开关 正常使用请设定 False ，设定为 True 后会输出更多调试信息，且不再将真实姓名替换为 喵喵喵
 debug_switch = False
@@ -73,90 +170,7 @@ for pop_user in user_pool:
     all_input = sys.argv
     sleep(20)   # 每个用户之间延时，以提高成功率
 
-    # 创建发送邮件的方法
-    def report_mail(full_info=debug_switch):
-        if full_info:
-            this_time_vars = {'result_flag': result_flag,
-                              'mixed_token': mixed_token,
-                              'public_data': public_data,
-                              'step_1_output': step_1_output,
-                              'step_1_calc': step_1_calc,
-                              'step_1_state': step_1_state,
-                              'step_2_output': step_2_output,
-                              'step_2_calc': step_2_calc,
-                              'step_2_state': step_2_state,
-                              'step_3_output': step_3_output,
-                              'step_3_calc': step_3_calc,
-                              'step_3_state': step_3_state,
-                              'secrets_inputted': sys.argv,
-                              'step_1_post_data': post_data,
-                              'result': result
-                              }
-        else:
-            if type(result) == str:
-                replaced_result = result.replace(real_name, "喵喵喵")
-            else:
-                replaced_result = result
-            this_time_vars = {'result_flag': result_flag,
-                              'step_1_output': step_1_output,
-                              'step_1_calc': step_1_calc,
-                              'step_1_state': step_1_state,
-                              'step_2_output': step_2_output,
-                              'step_2_calc': step_2_calc,
-                              'step_2_state': step_2_state,
-                              'step_3_calc': step_3_calc,
-                              'step_3_state': step_3_state,
-                              'result': replaced_result
-                              }
-        with open("mail_public_config.json", 'rb') as file_obj_inner:
-            public_mail_config = json.load(file_obj_inner)
-            file_obj_inner.close()
-        # 配置邮件内容
-        mail_message = MIMEText(str(this_time_vars), 'plain', 'utf-8')
-        mail_message['Subject'] = public_mail_config['title']
-        mail_message['From'] = mail_id
-        mail_message['To'] = mail_target
-        # 尝试发送邮件
-        try:
-            mail_host = "Zero"
-            mail_port = "0"
-            this_host = "Zero"
-            for each_host in public_mail_config["symbol"]:
-                if each_host in mail_id:
-                    mail_host = public_mail_config[each_host]["host"]
-                    mail_port = public_mail_config[each_host]["port"]
-                    this_host = each_host
-                    break
-            if mail_host == "Zero":
-                print('发送结果的邮箱设置异常，请在 mail_public_config.json 中检查邮箱的域名配置，以及发信SMTP服务器配置.')
-                raise smtplib.SMTPException
-            if this_host == "Zero":
-                print('发送结果的邮箱设置异常，请确保 mail_public_config.json 中包含您的邮箱配置.')
-                raise smtplib.SMTPException
-            if "encryption" in public_mail_config[this_host].keys():
-                smtp_obj = smtplib.SMTP(mail_host, mail_port)
-                smtp_obj.ehlo()
-                smtp_obj.starttls()
-                smtp_obj.ehlo()
-                smtp_obj.login(mail_id, mail_pd)
-                smtp_obj.sendmail(mail_id, mail_target, mail_message.as_string())
-                smtp_obj.quit()
-                print('用户' + str(now_user) + '具体提示信息已发送到邮箱，内容包含个人敏感信息，请勿泄露邮件内容.')
-            else:
-                smtp_obj = smtplib.SMTP_SSL(mail_host, mail_port)
-                smtp_obj.login(mail_id, mail_pd)
-                smtp_obj.sendmail(mail_id, mail_target, mail_message.as_string())
-                smtp_obj.quit()
-                print('用户' + str(now_user) + '具体提示信息已发送到邮箱，内容包含个人敏感信息，请勿泄露邮件内容.')
-            if now_user >= len(user_pool):
-                print("所有用户遍历完毕，结束运行.")
-                exit(0)
-            else:
-                return "next_one"
-        except smtplib.SMTPException:
-            print('发送结果的邮箱设置可能异常，请检查邮箱和密码配置，以及发信SMTP服务器配置.')
-            raise smtplib.SMTPException
-
+    
 
     # 准备请求数据
     session = requests.session()
