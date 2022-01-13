@@ -27,6 +27,7 @@ jobs:
       env:
         mail_id: ${{secrets.mail_id}}
         mail_pd: ${{secrets.mail_pd}}
+        target_admin_addr: ${{secrets.admin_mail_id}}
         processing_pool: ${{secrets.processing_pool}}
       run: |
-        python Application.py "$mail_id" "$mail_pd" "$processing_pool"
+        python Application.py "$mail_id" "$mail_pd" "$target_admin_addr" "$processing_pool"
