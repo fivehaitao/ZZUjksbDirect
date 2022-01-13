@@ -2,13 +2,13 @@
 #
 # By Clok Much
 import sys
-import json
-import smtplib
-from email.mime.text import MIMEText
-from time import sleep
-import time
-from utils.util import *
+
 import requests
+
+from utils.util import *
+
+# ###### 调试区，项目可稳定使用时，两者均应是 False
+# 调试开关 正常使用请设定 False ，设定为 True 后会输出更多调试信息，且不再将真实姓名替换为 喵喵喵
 
 
 # 开始时接收传入的 Secrets
@@ -21,7 +21,6 @@ user_pool = sys.argv[4]
 # 以中文逗号分隔，子项目不得包含中文逗号和中文感叹号，每个用户以中文感叹号分割
 send_mail_info={'mail_id':mail_id,'mail_pd':mail_pd}
 users = processUserInfo(user_pool)
-
 
 for this_user in users:
     this_mail_id = this_user['mail_target']
@@ -263,13 +262,14 @@ for this_user in users:
     # if user_log[this_mail_id]!='':
     #     # report_mail(this_user, str(user_log[this_mail_id]))
 
-
-print(user_log)
+print("user log:")
 for this_user in users:
     mail_target = this_user['mail_target']
     if len(user_log[mail_target]) >0 :
-        print(str(user_log[mail_target]))
-        report_mail(send_mail_info,mail_target,str(user_log[mail_target]))
-print(str(admin_log))
-report_mail(send_mail_info,admin_mail_addr,str(admin_log))
+        print(this_user['real_name']+":")
+        print(list_to_str(user_log[mail_target]))
+        report_mail(send_mail_info,mail_target,list_to_str(user_log[mail_target]))
+print("admin log:")
+print(list_to_str(admin_log))
+report_mail(send_mail_info,admin_mail_addr,list_to_str(admin_log))
 
