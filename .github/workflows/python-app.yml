@@ -6,7 +6,7 @@ name: Start jksb
 on:
   workflow_dispatch:
   schedule:
-    - cron: '24 1,9,17 * * *'
+    - cron: '35 20,22,23,5 * * *'
 
 jobs:
   build:
