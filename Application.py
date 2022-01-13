@@ -11,6 +11,13 @@ import requests
 
 
 
+# ###### 调试区，项目可稳定使用时，两者均应是 False
+# 调试开关 正常使用请设定 False ，设定为 True 后会输出更多调试信息，且不再将真实姓名替换为 喵喵喵
+debug_switch = False
+# 总是认为上报失败的标记 正常使用请设定为 False ，设定为 True 后会每次都发送失败邮件，即使是上报成功
+always_fail = False
+
+
 
 # 创建发送邮件的方法
 def report_mail(full_info=debug_switch):
@@ -104,13 +111,6 @@ def report_mail(full_info=debug_switch):
 
 
 
-
-
-# ###### 调试区，项目可稳定使用时，两者均应是 False
-# 调试开关 正常使用请设定 False ，设定为 True 后会输出更多调试信息，且不再将真实姓名替换为 喵喵喵
-debug_switch = False
-# 总是认为上报失败的标记 正常使用请设定为 False ，设定为 True 后会每次都发送失败邮件，即使是上报成功
-always_fail = False
 
 # 开始时接收传入的 Secrets
 mail_id = sys.argv[1]
